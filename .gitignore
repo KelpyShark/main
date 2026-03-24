@@ -1,0 +1,11 @@
+private/
+cli/
+compiler/
+docs/
+examples/
+interpreter/
+package_manager/
+site/
+stdlib/
+tests/
+target/

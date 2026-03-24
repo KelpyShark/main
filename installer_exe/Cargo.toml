@@ -1,0 +1,13 @@
+[package]
+name = "kelpyshark-installer"
+version = "0.1.0"
+edition = "2021"
+description = "Standalone EXE installer for the KelpyShark Programming Language"
+
+[[bin]]
+name = "kelpyshark-setup"
+path = "src/main.rs"
+
+[build-dependencies]
+
+[dependencies]

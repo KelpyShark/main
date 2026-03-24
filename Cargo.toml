@@ -1,0 +1,17 @@
+[workspace]
+members = [
+    "cli",
+    "compiler",
+    "interpreter",
+    "stdlib",
+    "package_manager",
+    "installer_exe",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["KelpyShark Team"]
+description = "The KelpyShark Programming Language"
+license = "MIT"

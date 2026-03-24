@@ -1,4 +1,4 @@
-# 🦈 KelpyShark Programming Language
+# KelpyShark Programming Language
 
 **A readable, versatile, beginner-friendly programming language capable of compiling to multiple targets.**
 

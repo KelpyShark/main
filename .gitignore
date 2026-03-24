@@ -1,7 +1,6 @@
 private/
 cli/
 compiler/
-docs/
 examples/
 interpreter/
 package_manager/

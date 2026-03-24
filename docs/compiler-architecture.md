@@ -9,7 +9,7 @@ Source Code (.ks)
        │
        ▼
 ┌─────────────┐
-│    Lexer     │  Tokenizes source into token stream
+│    Lexer    │  Tokenizes source into token stream
 └──────┬──────┘
        │
        ▼

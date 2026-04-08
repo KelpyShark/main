@@ -9,3 +9,5 @@ stdlib/
 tests/
 target/
 tutorial/
+docs/
+formatter/

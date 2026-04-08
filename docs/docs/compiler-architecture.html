@@ -1,0 +1,118 @@
+<head><title>KelpyShark Compiler Architecture</title></head>
+<style>@import "../common.css"; </style>
+<body class="markdown-body">
+<h1 id="kelpyshark-compiler-architecture">KelpyShark Compiler Architecture</h1>
+<h2 id="overview">Overview</h2>
+<p>The KelpyShark compiler follows a classic multi-stage pipeline:</p>
+<pre><code>Source <span class="hljs-built_in">Code</span> (.ks)
+       │
+       ▼
+┌─────────────┐
+│    Lexer    │  Tokenizes source into <span class="hljs-built_in">token</span> stream
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│   Parser    │  Pratt parser → AST
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│  Semantic   │  Validates AST correctness
+│  Analyzer   │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│    <span class="hljs-built_in">Code</span>     │  AST → C / JS / Java / C<span class="hljs-meta">#</span>
+│  Generator  │
+└──────┬──────┘
+       │
+       ▼
+  Target <span class="hljs-built_in">Code</span>
+</code></pre><h2 id="lexer-compiler-src-lexer-rs-">Lexer (<code>compiler/src/lexer.rs</code>)</h2>
+<p>The lexer (tokenizer) converts raw source text into a stream of tokens.</p>
+<h3 id="token-types">Token Types</h3>
+<ul>
+<li><strong>Identifiers</strong>: variable/function names</li>
+<li><strong>Keywords</strong>: <code>def</code>, <code>if</code>, <code>else</code>, <code>while</code>, <code>for</code>, <code>in</code>, <code>return</code>, <code>import</code>, <code>true</code>, <code>false</code>, <code>and</code>, <code>or</code>, <code>not</code>, <code>print</code></li>
+<li><strong>Literals</strong>: strings (<code>&quot;hello&quot;</code>), numbers (<code>42</code>, <code>3.14</code>), booleans</li>
+<li><strong>Operators</strong>: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, <code>=</code>, <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code></li>
+<li><strong>Punctuation</strong>: <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>[</code>, <code>]</code>, <code>,</code>, <code>:</code>, <code>.</code></li>
+<li><strong>Special</strong>: <code>NEWLINE</code>, <code>EOF</code></li>
+</ul>
+<h3 id="error-reporting">Error Reporting</h3>
+<p>The lexer tracks line and column positions for every token, enabling precise error messages.</p>
+<h2 id="parser-compiler-src-parser-rs-">Parser (<code>compiler/src/parser.rs</code>)</h2>
+<p>Uses a <strong>Pratt parser</strong> (Top-Down Operator Precedence) for expressions and recursive descent for statements.</p>
+<h3 id="precedence-levels-lowest-to-highest-">Precedence Levels (lowest to highest)</h3>
+<ol>
+<li><code>or</code></li>
+<li><code>and</code></li>
+<li><code>==</code>, <code>!=</code></li>
+<li><code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code></li>
+<li><code>+</code>, <code>-</code></li>
+<li><code>*</code>, <code>/</code>, <code>%</code></li>
+<li>Unary: <code>not</code>, <code>-</code></li>
+<li>Call: <code>()</code>, <code>[]</code>, <code>.</code></li>
+</ol>
+<h3 id="why-pratt-">Why Pratt?</h3>
+<ul>
+<li>Elegant handling of operator precedence</li>
+<li>Easy to extend with new operators</li>
+<li>Clean, maintainable code</li>
+</ul>
+<h2 id="ast-compiler-src-ast-rs-">AST (<code>compiler/src/ast.rs</code>)</h2>
+<h3 id="statement-nodes">Statement Nodes</h3>
+<ul>
+<li><code>Assignment</code> — <code>name = expr</code></li>
+<li><code>FunctionDef</code> — <code>def name(params) { body }</code></li>
+<li><code>If</code> — <code>if cond { then } else { else }</code></li>
+<li><code>While</code> — <code>while cond { body }</code></li>
+<li><code>For</code> — <code>for var in iterable { body }</code></li>
+<li><code>Return</code> — <code>return expr</code></li>
+<li><code>Import</code> — <code>import module</code></li>
+<li><code>Print</code> — <code>print expr</code></li>
+<li><code>ExprStatement</code> — bare expression</li>
+</ul>
+<h3 id="expression-nodes">Expression Nodes</h3>
+<ul>
+<li><code>NumberLiteral</code>, <code>StringLiteral</code>, <code>BooleanLiteral</code></li>
+<li><code>Identifier</code></li>
+<li><code>BinaryOp</code>, <code>UnaryOp</code></li>
+<li><code>FunctionCall</code></li>
+<li><code>Index</code>, <code>MemberAccess</code></li>
+<li><code>ListLiteral</code>, <code>DictLiteral</code></li>
+<li><code>StringInterpolation</code></li>
+</ul>
+<h2 id="code-generators">Code Generators</h2>
+<h3 id="c-generator-compiler-src-codegen-c-rs-">C Generator (<code>compiler/src/codegen/c.rs</code>)</h3>
+<ul>
+<li>All values represented as tagged union (<code>KsValue</code>)</li>
+<li>Emits complete standalone C file with runtime</li>
+<li>Generated code compiles with <code>gcc -o output output.c -lm</code></li>
+</ul>
+<h3 id="javascript-generator-compiler-src-codegen-javascript-rs-">JavaScript Generator (<code>compiler/src/codegen/javascript.rs</code>)</h3>
+<ul>
+<li>Direct mapping to JS semantics</li>
+<li><code>print</code> → <code>console.log()</code></li>
+<li>String interpolation → JS template literals</li>
+<li>Lists/dicts map directly to JS arrays/objects</li>
+</ul>
+<h2 id="interpreter-interpreter-src-interpreter-rs-">Interpreter (<code>interpreter/src/interpreter.rs</code>)</h2>
+<p>Tree-walking interpreter that evaluates AST nodes directly.</p>
+<h3 id="environment">Environment</h3>
+<p>Lexical scoping with a scope stack. Inner scopes can read/update outer variables.</p>
+<h3 id="values">Values</h3>
+<p>All runtime values are represented by the <code>Value</code> enum:</p>
+<ul>
+<li><code>Number(f64)</code></li>
+<li><code>String(String)</code></li>
+<li><code>Boolean(bool)</code></li>
+<li><code>List(Vec&lt;Value&gt;)</code></li>
+<li><code>Dict(HashMap&lt;String, Value&gt;)</code></li>
+<li><code>Function { name, params, body }</code></li>
+<li><code>NativeFunction { name, arity, func }</code></li>
+<li><code>Null</code></li>
+</ul>
+<div><button onclick="window.location.href='../index.html'">Site Homepage</button></div></body>

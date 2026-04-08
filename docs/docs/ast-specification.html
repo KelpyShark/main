@@ -1,0 +1,879 @@
+<head><title>KelpyShark AST Specification</title></head>
+<style>@import "../common.css"; </style>
+<body class="markdown-body">
+<h1 id="kelpyshark-ast-specification">KelpyShark AST Specification</h1>
+<p>The Abstract Syntax Tree (AST) is the intermediate representation produced by the parser
+and consumed by the semantic analyzer, interpreter, and code generators.</p>
+<p>Every node carries a <code>SourceLocation</code> (line, column) for error reporting.</p>
+<hr>
+<h2 id="ast-structure-diagram">AST Structure Diagram</h2>
+<pre><code>                          Program
+                            │
+                ┌───────────┼───────────┐
+                ▼           ▼           ▼
+           Statement    Statement    Statement ...
+                │
+   ┌────────────┼────────────────────────┐
+   ▼            ▼            ▼           ▼
+Assignment  FunctionDef   <span class="hljs-keyword">If</span>/<span class="hljs-keyword">While</span>/<span class="hljs-keyword">For</span>  <span class="hljs-keyword">Print</span> ...
+   │            │            │
+   ▼            ▼            ▼
+  <span class="hljs-keyword">Expr</span>      <span class="hljs-built_in">Vec</span>&lt;Stmt&gt;   <span class="hljs-keyword">Expr</span> + <span class="hljs-built_in">Vec</span>&lt;Stmt&gt;
+   │
+   ├──► NumberLiteral    (leaf)
+   ├──► StringLiteral    (leaf)
+   ├──► BooleanLiteral   (leaf)
+   ├──► Identifier       (leaf)
+   ├──► BinaryOp         (left: <span class="hljs-keyword">Expr</span>, right: <span class="hljs-keyword">Expr</span>)
+   ├──► UnaryOp          (operand: <span class="hljs-keyword">Expr</span>)
+   ├──► FunctionCall     (callee: <span class="hljs-keyword">Expr</span>, args: <span class="hljs-built_in">Vec</span>&lt;<span class="hljs-keyword">Expr</span>&gt;)
+   ├──► Index            (object: <span class="hljs-keyword">Expr</span>, index: <span class="hljs-keyword">Expr</span>)
+   ├──► MemberAccess     (object: <span class="hljs-keyword">Expr</span>, member: <span class="hljs-keyword">String</span>)
+   ├──► ListLiteral      (elements: <span class="hljs-built_in">Vec</span>&lt;<span class="hljs-keyword">Expr</span>&gt;)
+   ├──► DictLiteral      (entries: <span class="hljs-built_in">Vec</span>&lt;(<span class="hljs-keyword">Expr</span>, <span class="hljs-keyword">Expr</span>)&gt;)
+   └──► StringInterpolation (parts: <span class="hljs-built_in">Vec</span>&lt;StringPart&gt;)
+</code></pre><hr>
+<h2 id="root-node">Root Node</h2>
+<h3 id="-program-"><code>Program</code></h3>
+<p>The top-level node representing an entire <code>.ks</code> source file.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>statements</code></td>
+<td><code>Vec&lt;Statement&gt;</code></td>
+<td>Ordered list of top-level statements</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="statement-nodes">Statement Nodes</h2>
+<h3 id="-assignment-"><code>Assignment</code></h3>
+<p>Variable assignment. Creates or updates a binding.</p>
+<pre><code><span class="hljs-attr">x</span> = <span class="hljs-number">42</span>
+<span class="hljs-attr">name</span> = <span class="hljs-string">"KelpyShark"</span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>String</code></td>
+<td>Variable name</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td><code>Expr</code></td>
+<td>Right-hand side expression</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-functiondef-"><code>FunctionDef</code></h3>
+<p>Function definition. Parameters are positional.</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span><span class="hljs-params">(a, b)</span></span> {
+    <span class="hljs-keyword">return</span> a + b
+}
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>String</code></td>
+<td>Function name</td>
+</tr>
+<tr>
+<td><code>params</code></td>
+<td><code>Vec&lt;String&gt;</code></td>
+<td>Parameter names</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td><code>Vec&lt;Statement&gt;</code></td>
+<td>Function body statements</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-if-"><code>If</code></h3>
+<p>Conditional with optional else branch.</p>
+<pre><code><span class="hljs-built_in">if</span> x &gt; <span class="hljs-number">10</span> {
+    <span class="hljs-built_in">print</span> <span class="hljs-string">"big"</span>
+} <span class="hljs-built_in">else</span> {
+    <span class="hljs-built_in">print</span> <span class="hljs-string">"small"</span>
+}
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>condition</code></td>
+<td><code>Expr</code></td>
+<td>Condition expression</td>
+</tr>
+<tr>
+<td><code>then_body</code></td>
+<td><code>Vec&lt;Statement&gt;</code></td>
+<td>True branch</td>
+</tr>
+<tr>
+<td><code>else_body</code></td>
+<td><code>Option&lt;Vec&lt;Statement&gt;&gt;</code></td>
+<td>Optional false branch</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-while-"><code>While</code></h3>
+<p>Pre-condition loop.</p>
+<pre><code>while x &lt; <span class="hljs-number">10</span> {
+    x = x + <span class="hljs-number">1</span>
+}
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>condition</code></td>
+<td><code>Expr</code></td>
+<td>Loop condition</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td><code>Vec&lt;Statement&gt;</code></td>
+<td>Loop body</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-for-"><code>For</code></h3>
+<p>Iteration over a collection.</p>
+<pre><code><span class="hljs-keyword">for</span> <span class="hljs-built_in">item</span> <span class="hljs-keyword">in</span> items {
+    print <span class="hljs-built_in">item</span>
+}
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>variable</code></td>
+<td><code>String</code></td>
+<td>Loop variable name</td>
+</tr>
+<tr>
+<td><code>iterable</code></td>
+<td><code>Expr</code></td>
+<td>Expression producing the iterable</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td><code>Vec&lt;Statement&gt;</code></td>
+<td>Loop body</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-return-"><code>Return</code></h3>
+<p>Return from a function. Only valid inside <code>FunctionDef</code>.</p>
+<pre><code><span class="hljs-keyword">return</span> x + <span class="hljs-number">1</span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td><code>Option&lt;Expr&gt;</code></td>
+<td>Return value (None for bare <code>return</code>)</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-import-"><code>Import</code></h3>
+<p>Module import.</p>
+<pre><code><span class="hljs-keyword">import</span> math
+<span class="hljs-keyword">import</span> http.server
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>module</code></td>
+<td><code>String</code></td>
+<td>Module path (dot-separated)</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-print-"><code>Print</code></h3>
+<p>Print statement (keyword, not a function).</p>
+<pre><code><span class="hljs-built_in">print</span> <span class="hljs-string">"Hello!"</span>
+<span class="hljs-built_in">print</span> x + <span class="hljs-number">1</span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td><code>Expr</code></td>
+<td>Expression to print</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-exprstatement-"><code>ExprStatement</code></h3>
+<p>Bare expression used as a statement (e.g., a function call).</p>
+<pre><code><span class="hljs-function"><span class="hljs-title">do_something</span><span class="hljs-params">()</span></span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>expr</code></td>
+<td><code>Expr</code></td>
+<td>The expression</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="expression-nodes">Expression Nodes</h2>
+<h3 id="-numberliteral-"><code>NumberLiteral</code></h3>
+<p>Integer or floating-point number.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td><code>f64</code></td>
+<td>Numeric value</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<p>Examples: <code>42</code>, <code>3.14</code>, <code>0</code>, <code>-1</code></p>
+<h3 id="-stringliteral-"><code>StringLiteral</code></h3>
+<p>Plain string (no interpolation).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td><code>String</code></td>
+<td>String contents (escape sequences resolved)</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<p>Supported escapes: <code>\n</code>, <code>\t</code>, <code>\\</code>, <code>\&quot;</code></p>
+<h3 id="-booleanliteral-"><code>BooleanLiteral</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> or <code>false</code></td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-identifier-"><code>Identifier</code></h3>
+<p>Variable or function name reference.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>String</code></td>
+<td>The identifier</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-binaryop-"><code>BinaryOp</code></h3>
+<p>Binary operation between two expressions.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>left</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>Left operand</td>
+</tr>
+<tr>
+<td><code>op</code></td>
+<td><code>BinaryOperator</code></td>
+<td>Operator</td>
+</tr>
+<tr>
+<td><code>right</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>Right operand</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-unaryop-"><code>UnaryOp</code></h3>
+<p>Unary prefix operation.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>op</code></td>
+<td><code>UnaryOperator</code></td>
+<td>Operator</td>
+</tr>
+<tr>
+<td><code>operand</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>Operand</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-functioncall-"><code>FunctionCall</code></h3>
+<p>Function invocation. The callee is an expression to support first-class functions.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>callee</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>Expression that resolves to a function</td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td><code>Vec&lt;Expr&gt;</code></td>
+<td>Positional arguments</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-index-"><code>Index</code></h3>
+<p>Bracket access on lists and dictionaries.</p>
+<pre><code><span class="hljs-type">list</span>[<span class="hljs-number">0</span>]
+dict[<span class="hljs-string">"key"</span>]
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>The collection</td>
+</tr>
+<tr>
+<td><code>index</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>The index/key expression</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-memberaccess-"><code>MemberAccess</code></h3>
+<p>Dot access.</p>
+<pre><code>obj.<span class="hljs-built_in">field</span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td><code>Box&lt;Expr&gt;</code></td>
+<td>The object</td>
+</tr>
+<tr>
+<td><code>member</code></td>
+<td><code>String</code></td>
+<td>Field name</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-listliteral-"><code>ListLiteral</code></h3>
+<p>List constructor.</p>
+<pre><code>[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]
+[<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>]
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>elements</code></td>
+<td><code>Vec&lt;Expr&gt;</code></td>
+<td>Element expressions</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-dictliteral-"><code>DictLiteral</code></h3>
+<p>Dictionary constructor. Keys and values are both expressions.</p>
+<pre><code>{<span class="hljs-attr">"name"</span>: <span class="hljs-string">"Alice"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">30</span>}
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entries</code></td>
+<td><code>Vec&lt;(Expr, Expr)&gt;</code></td>
+<td>Key-value pairs</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-stringinterpolation-"><code>StringInterpolation</code></h3>
+<p>A string containing embedded <code>{$expr}</code> expressions.</p>
+<pre><code><span class="hljs-string">"Hello, {<span class="hljs-variable">$name</span>}! You are {<span class="hljs-variable">$age</span>} years old."</span>
+</code></pre><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>parts</code></td>
+<td><code>Vec&lt;StringPart&gt;</code></td>
+<td>Sequence of literal and expression parts</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td><code>SourceLocation</code></td>
+<td>Source position</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="auxiliary-types">Auxiliary Types</h2>
+<h3 id="-stringpart-"><code>StringPart</code></h3>
+<p>Component of an interpolated string.</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Data</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Literal</code></td>
+<td><code>String</code></td>
+<td>Plain text segment</td>
+</tr>
+<tr>
+<td><code>Expression</code></td>
+<td><code>Expr</code></td>
+<td>Evaluated expression segment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-binaryoperator-"><code>BinaryOperator</code></h3>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Symbol</th>
+<th>Precedence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Add</code></td>
+<td><code>+</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>Subtract</code></td>
+<td><code>-</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>Multiply</code></td>
+<td><code>*</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>Divide</code></td>
+<td><code>/</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>Modulo</code></td>
+<td><code>%</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>Equal</code></td>
+<td><code>==</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>NotEqual</code></td>
+<td><code>!=</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>LessThan</code></td>
+<td><code>&lt;</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>LessEqual</code></td>
+<td><code>&lt;=</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>GreaterThan</code></td>
+<td><code>&gt;</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>GreaterEqual</code></td>
+<td><code>&gt;=</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>And</code></td>
+<td><code>and</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>Or</code></td>
+<td><code>or</code></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-unaryoperator-"><code>UnaryOperator</code></h3>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Symbol</th>
+<th>Precedence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Negate</code></td>
+<td><code>-</code></td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>Not</code></td>
+<td><code>not</code></td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-sourcelocation-"><code>SourceLocation</code></h3>
+<p>Attached to every node for error reporting.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>line</code></td>
+<td><code>usize</code></td>
+<td>1-based line number</td>
+</tr>
+<tr>
+<td><code>column</code></td>
+<td><code>usize</code></td>
+<td>1-based column number</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="semantic-analysis-passes">Semantic Analysis Passes</h2>
+<p>After the AST is built, the semantic analyzer validates it. The following checks are performed:</p>
+<pre><code>          AST
+           │
+           ▼
+┌──────────────────┐
+│ Scope Resolution │  Track variable definitions <span class="hljs-keyword">and</span> usages
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│ <span class="hljs-keyword">Function</span> <span class="hljs-title">Checks</span>  │  Arity, duplicates, <span class="hljs-keyword">return</span> <span class="hljs-type">placement</span>
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Warning Pass    │  Unused variables
+└────────┬─────────┘
+         │
+         ▼
+  Diagnostics (errors / warnings)
+</code></pre><h3 id="checks">Checks</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Severity</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Undefined variable</td>
+<td>Error</td>
+<td>Variable used before assignment</td>
+</tr>
+<tr>
+<td>Undefined function</td>
+<td>Error</td>
+<td>Call to unknown function</td>
+</tr>
+<tr>
+<td>Arity mismatch</td>
+<td>Error</td>
+<td>Wrong number of arguments</td>
+</tr>
+<tr>
+<td>Duplicate function</td>
+<td>Error</td>
+<td>Two <code>def</code> with same name</td>
+</tr>
+<tr>
+<td>Return outside function</td>
+<td>Error</td>
+<td><code>return</code> at top level</td>
+</tr>
+<tr>
+<td>Unused variable</td>
+<td>Warning</td>
+<td>Variable assigned but never read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="built-in-awareness">Built-in Awareness</h3>
+<p>The analyzer knows about built-in functions (<code>len</code>, <code>type</code>, <code>str</code>, <code>num</code>, <code>push</code>, <code>print</code>)
+and will not flag them as undefined.</p>
+<hr>
+<h2 id="example-ast">Example AST</h2>
+<p>Given this source:</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">greet</span><span class="hljs-params">(name)</span></span> {
+    print <span class="hljs-string">"Hello, {$name}!"</span>
+}
+greet(<span class="hljs-string">"world"</span>)
+</code></pre><p>The AST looks like:</p>
+<pre><code>Program
+├── FunctionDef
+│   ├── <span class="hljs-string">name:</span> <span class="hljs-string">"greet"</span>
+│   ├── <span class="hljs-string">params:</span> [<span class="hljs-string">"name"</span>]
+│   └── <span class="hljs-string">body:</span>
+│       └── Print
+│           └── StringInterpolation
+│               ├── Literal(<span class="hljs-string">"Hello, "</span>)
+│               ├── Expression(Identifier(<span class="hljs-string">"name"</span>))
+│               └── Literal(<span class="hljs-string">"!"</span>)
+└── ExprStatement
+    └── FunctionCall
+        ├── <span class="hljs-string">callee:</span> Identifier(<span class="hljs-string">"greet"</span>)
+        └── <span class="hljs-string">args:</span>
+            └── StringLiteral(<span class="hljs-string">"world"</span>)
+</code></pre><div><button onclick="window.location.href='../index.html'">Site Homepage</button></div></body>

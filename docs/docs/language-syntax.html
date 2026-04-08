@@ -1,0 +1,198 @@
+<head><title>KelpyShark Language Syntax</title></head>
+<style>@import "../common.css";</style>
+<body class="markdown-body">
+<h1 id="kelpyshark-language-syntax-reference">KelpyShark Language Syntax Reference</h1>
+<h2 id="comments">Comments</h2>
+<pre><code># This is a single-line comment
+
+### This is a
+multi-line comment ###
+</code></pre><h2 id="variables">Variables</h2>
+<p>KelpyShark is dynamically typed. Variables are created on assignment.</p>
+<pre><code><span class="hljs-attr">x</span> = <span class="hljs-number">42</span>
+<span class="hljs-attr">name</span> = <span class="hljs-string">"KelpyShark"</span>
+<span class="hljs-attr">active</span> = <span class="hljs-literal">true</span>
+<span class="hljs-attr">items</span> = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]
+<span class="hljs-attr">data</span> = {<span class="hljs-string">"key"</span>: <span class="hljs-string">"value"</span>}
+</code></pre><h2 id="data-types">Data Types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Number</td>
+<td><code>42</code>, <code>3.14</code></td>
+</tr>
+<tr>
+<td>String</td>
+<td><code>&quot;hello&quot;</code></td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td><code>true</code>, <code>false</code></td>
+</tr>
+<tr>
+<td>List</td>
+<td><code>[1, &quot;two&quot;, true]</code></td>
+</tr>
+<tr>
+<td>Dict</td>
+<td><code>{&quot;name&quot;: &quot;Bob&quot;, &quot;age&quot;: 27}</code></td>
+</tr>
+<tr>
+<td>Null</td>
+<td>(returned from functions with no return value)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="operators">Operators</h2>
+<h3 id="arithmetic">Arithmetic</h3>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+</code></td>
+<td>Add (or concatenate strings)</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>Subtract</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Multiply</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>Divide</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>Modulo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="comparison">Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>Equal</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>Not equal</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>Less than</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>Less or equal</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>Greater than</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>Greater or equal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="logical">Logical</h3>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>and</code></td>
+<td>Logical AND</td>
+</tr>
+<tr>
+<td><code>or</code></td>
+<td>Logical OR</td>
+</tr>
+<tr>
+<td><code>not</code></td>
+<td>Logical NOT</td>
+</tr>
+</tbody>
+</table>
+<h2 id="strings">Strings</h2>
+<pre><code><span class="hljs-attr">greeting</span> = <span class="hljs-string">"Hello, world!"</span>
+<span class="hljs-attr">escaped</span> = <span class="hljs-string">"line1\nline2\ttab"</span>
+<span class="hljs-attr">interpolated</span> = <span class="hljs-string">"Hello, {$name}!"</span>
+<span class="hljs-attr">concatenated</span> = <span class="hljs-string">"Hello"</span> + <span class="hljs-string">" "</span> + <span class="hljs-string">"world"</span>
+</code></pre><h2 id="functions">Functions</h2>
+<pre><code>def <span class="hljs-keyword">add</span><span class="bash">(a, b) {
+</span>    return a + b
+}
+
+result = <span class="hljs-keyword">add</span><span class="bash">(3, 7)
+</span>print result   <span class="hljs-comment"># 10</span>
+</code></pre><p>Functions are first-class values and support recursion.</p>
+<h2 id="control-flow">Control Flow</h2>
+<h3 id="if-else">If / Else</h3>
+<pre><code><span class="hljs-built_in">if</span> x &gt;= <span class="hljs-number">10</span> {
+    <span class="hljs-built_in">print</span> <span class="hljs-string">"big"</span>
+} <span class="hljs-built_in">else</span> {
+    <span class="hljs-built_in">print</span> <span class="hljs-string">"small"</span>
+}
+</code></pre><h3 id="while-loop">While Loop</h3>
+<pre><code>x = <span class="hljs-number">0</span>
+while x &lt; <span class="hljs-number">5</span> {
+    print x
+    x = x + <span class="hljs-number">1</span>
+}
+</code></pre><h3 id="for-loop">For Loop</h3>
+<pre><code>fruits = [<span class="hljs-string">"apple"</span>, <span class="hljs-string">"banana"</span>, <span class="hljs-string">"cherry"</span>]
+<span class="hljs-keyword">for</span> fruit <span class="hljs-keyword">in</span> fruits {
+    <span class="hljs-built_in">print</span> fruit
+}
+</code></pre><h2 id="collections">Collections</h2>
+<h3 id="lists">Lists</h3>
+<pre><code><span class="hljs-keyword">items</span> = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]
+print <span class="hljs-keyword">items</span>[<span class="hljs-number">0</span>]          <span class="hljs-comment"># 1</span>
+print <span class="hljs-built_in">len</span>(<span class="hljs-keyword">items</span>)        <span class="hljs-comment"># 3</span>
+</code></pre><h3 id="dictionaries">Dictionaries</h3>
+<pre><code>person = {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Alice"</span>, <span class="hljs-string">"age"</span>: 30}
+<span class="hljs-built_in">print</span> person[<span class="hljs-string">"name"</span>]    <span class="hljs-comment"># Alice</span>
+<span class="hljs-built_in">print</span> len(person)       <span class="hljs-comment"># 2</span>
+</code></pre><h2 id="imports">Imports</h2>
+<pre><code><span class="hljs-keyword">import</span> math
+<span class="hljs-keyword">import</span> http.server
+</code></pre><h2 id="print">Print</h2>
+<p><code>print</code> is a statement keyword (not a function).</p>
+<pre><code><span class="hljs-built_in">print</span> <span class="hljs-string">"Hello!"</span>
+<span class="hljs-built_in">print</span> 42
+<span class="hljs-built_in">print</span> <span class="hljs-string">"Value: {<span class="hljs-variable">$x</span>}"</span>
+</code></pre><h2 id="built-in-functions">Built-in Functions</h2>
+<ul>
+<li><code>len(x)</code> — Returns length of a string, list, or dict</li>
+<li><code>type(x)</code> — Returns the type name as a string</li>
+<li><code>str(x)</code> — Converts any value to a string</li>
+<li><code>num(x)</code> — Converts a value to a number</li>
+<li><code>push(list, value)</code> — Returns a new list with the value appended</li>
+</ul>
+<div><button onclick="window.location.href='../index.html'">Site Homepage</button></div></body>

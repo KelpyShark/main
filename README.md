@@ -33,7 +33,7 @@ bob = {"age": 27, "name": "Bob Smith"}
 example_list = ["apple", "banana", "orange"]
 
 def greet(name) {
-    print "Hello, {$name}! 🦈"
+    print "Hello, {$name}! "
 }
 
 greet(bob["name"])

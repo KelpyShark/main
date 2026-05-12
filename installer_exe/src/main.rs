@@ -21,17 +21,17 @@ use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
-// ═══════════════════════════════════════════════════════════════
+
 // Embedded binary
-// ═══════════════════════════════════════════════════════════════
+
 
 /// The pre-built kelpy CLI binary, embedded at compile time.
 /// The path is set by build.rs via KELPY_CLI_BINARY env var.
 const KELPY_BINARY: &[u8] = include_bytes!(env!("KELPY_CLI_BINARY"));
 
-// ═══════════════════════════════════════════════════════════════
+
 // Constants
-// ═══════════════════════════════════════════════════════════════
+
 
 const VERSION: &str = "0.1.0";
 
@@ -41,9 +41,9 @@ const BINARY_NAME: &str = "kelpy.exe";
 #[cfg(not(target_os = "windows"))]
 const BINARY_NAME: &str = "kelpy";
 
-// ═══════════════════════════════════════════════════════════════
+
 // Colours (ANSI escape codes)
-// ═══════════════════════════════════════════════════════════════
+
 
 const CYAN: &str = "\x1b[36m";
 const GREEN: &str = "\x1b[32m";
@@ -53,9 +53,9 @@ const BOLD: &str = "\x1b[1m";
 const DIM: &str = "\x1b[2m";
 const RESET: &str = "\x1b[0m";
 
-// ═══════════════════════════════════════════════════════════════
+
 // Entry point
-// ═══════════════════════════════════════════════════════════════
+
 
 fn main() {
     let result = run_installer();
@@ -198,7 +198,7 @@ fn run_installer() -> Result<(), String> {
     // ── Summary ──
     println!();
     println!("  {GREEN}═══════════════════════════════════════════{RESET}");
-    println!("  {GREEN}{BOLD}  🦈 KelpyShark {VERSION} installed!{RESET}");
+    println!("  {GREEN}{BOLD}  KelpyShark {VERSION} installed!{RESET}");
     println!("  {GREEN}═══════════════════════════════════════════{RESET}");
     println!();
     println!("  {BOLD}Installed to:{RESET}  {}", install_dir.display());
@@ -226,18 +226,18 @@ fn run_installer() -> Result<(), String> {
     Ok(())
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // UI helpers
-// ═══════════════════════════════════════════════════════════════
+
 
 fn print_banner() {
     println!();
     println!("  {CYAN}{BOLD}╔══════════════════════════════════════════╗{RESET}");
     println!("  {CYAN}{BOLD}║                                          ║{RESET}");
-    println!("  {CYAN}{BOLD}║   🦈  KelpyShark Installer  v{VERSION}      ║{RESET}");
+    println!("  {CYAN}{BOLD}║    KelpyShark Installer  v{VERSION}      ║{RESET}");
     println!("  {CYAN}{BOLD}║                                          ║{RESET}");
-    println!("  {CYAN}{BOLD}║   A readable, versatile programming      ║{RESET}");
-    println!("  {CYAN}{BOLD}║   language for everyone.                 ║{RESET}");
+    println!("  {CYAN}{BOLD}║    A readable, versatile programming     ║{RESET}");
+    println!("  {CYAN}{BOLD}║         language for everyone.           ║{RESET}");
     println!("  {CYAN}{BOLD}║                                          ║{RESET}");
     println!("  {CYAN}{BOLD}╚══════════════════════════════════════════╝{RESET}");
     println!();
@@ -264,9 +264,9 @@ fn prompt_enter(msg: &str) {
     io::stdin().read_line(&mut buf).ok();
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // Default install directory
-// ═══════════════════════════════════════════════════════════════
+
 
 fn default_install_dir() -> PathBuf {
     if cfg!(target_os = "windows") {
@@ -282,9 +282,9 @@ fn default_install_dir() -> PathBuf {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // Example files
-// ═══════════════════════════════════════════════════════════════
+
 
 fn write_example_files(dir: &Path) -> Result<(), String> {
     let examples = [
@@ -293,7 +293,7 @@ fn write_example_files(dir: &Path) -> Result<(), String> {
             r#"# Welcome to KelpyShark!
 
 name = "World"
-print "Hello, {$name}! 🦈"
+print "Hello, {$name}! "
 
 def greet(who) {
     print "Welcome to KelpyShark, {$who}!"
@@ -372,9 +372,9 @@ print person["name"] + " uses " + person["language"]
     Ok(())
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // Uninstaller
-// ═══════════════════════════════════════════════════════════════
+
 
 fn write_uninstaller(install_dir: &Path) -> Result<(), String> {
     if cfg!(target_os = "windows") {
@@ -488,9 +488,9 @@ echo ""
     Ok(())
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // PATH management
-// ═══════════════════════════════════════════════════════════════
+
 
 fn add_to_path(bin_dir: &Path) -> bool {
     let bin_str = bin_dir.to_string_lossy().to_string();
@@ -614,9 +614,9 @@ fn add_to_path_unix(_bin_str: &str) -> bool {
     false
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // Verification
-// ═══════════════════════════════════════════════════════════════
+
 
 fn verify_installation(binary_path: &Path) -> Result<(), String> {
     if !binary_path.exists() {
@@ -651,9 +651,9 @@ fn verify_installation(binary_path: &Path) -> Result<(), String> {
     Ok(())
 }
 
-// ═══════════════════════════════════════════════════════════════
+
 // Tests
-// ═══════════════════════════════════════════════════════════════
+
 
 #[cfg(test)]
 mod tests {

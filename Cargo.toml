@@ -7,6 +7,17 @@ members = [
     "package_manager",
     "installer_exe",
 ]
+# installer_exe must be built AFTER the CLI binary exists in target/release/
+# because it uses include_bytes! to embed it. Exclude it from the default build
+# so that `cargo build --release` doesn't try to compile it in parallel with
+# the CLI. Build it explicitly afterwards (see private/build-all.ps1).
+default-members = [
+    "cli",
+    "compiler",
+    "interpreter",
+    "stdlib",
+    "package_manager",
+]
 resolver = "2"
 
 [workspace.package]

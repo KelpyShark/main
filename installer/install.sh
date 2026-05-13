@@ -2,7 +2,7 @@
 # KelpyShark Installer — Linux / macOS
 #
 # Usage:
-#   curl -fsSL https://github.com/kelpyshark/main.git | bash
+#   curl -fsSL https://github.com/KelpyShark/main/raw/main/installer/install.sh | bash
 #
 # What this does:
 #   1. Checks for Rust/Cargo (installs if missing)

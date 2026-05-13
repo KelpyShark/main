@@ -1,7 +1,7 @@
 # KelpyShark Installer — Windows (PowerShell)
 #
 # Usage:
-#   irm https://github.com/kelpyshark/main.git | iex
+#   irm https://github.com/KelpyShark/main/raw/main/installer/install.ps1 | iex
 #
 # What this does:
 #   1. Checks for Rust/Cargo (installs if missing)

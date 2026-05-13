@@ -11,7 +11,7 @@
 ///   8. Verifies the installation
 ///
 /// Build workflow:
-///   1. `cargo build --release --bin kelpyshark-cli`   (build the language)
+///   1. `cargo build --release --bin kelpyshark`        (build the language)
 ///   2. `cargo build --release --bin kelpyshark-setup`  (build the installer)
 ///
 /// The installer embeds the CLI binary at compile time via `include_bytes!`.
@@ -36,10 +36,10 @@ const KELPY_BINARY: &[u8] = include_bytes!(env!("KELPY_CLI_BINARY"));
 const VERSION: &str = "0.1.0";
 
 #[cfg(target_os = "windows")]
-const BINARY_NAME: &str = "kelpy.exe";
+const BINARY_NAME: &str = "kelpyshark.exe";
 
 #[cfg(not(target_os = "windows"))]
-const BINARY_NAME: &str = "kelpy";
+const BINARY_NAME: &str = "kelpyshark";
 
 
 // Colours (ANSI escape codes)

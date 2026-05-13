@@ -12,9 +12,9 @@ fn main() {
     let workspace_root = PathBuf::from(&manifest_dir).parent().unwrap().to_path_buf();
 
     let cli_binary = if cfg!(target_os = "windows") {
-        workspace_root.join("target").join("release").join("kelpyshark-cli.exe")
+        workspace_root.join("target").join("release").join("kelpyshark.exe")
     } else {
-        workspace_root.join("target").join("release").join("kelpyshark-cli")
+        workspace_root.join("target").join("release").join("kelpyshark")
     };
 
     println!("cargo:rustc-env=KELPY_CLI_BINARY={}", cli_binary.display());

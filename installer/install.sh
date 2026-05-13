@@ -2,7 +2,7 @@
 # KelpyShark Installer — Linux / macOS
 #
 # Usage:
-#   curl -fsSL https://kelpyshark.pages.dev/install | bash
+#   curl -fsSL https://github.com/kelpyshark/main.git | bash
 #
 # What this does:
 #   1. Checks for Rust/Cargo (installs if missing)
@@ -15,7 +15,7 @@ set -euo pipefail
 
 KELPYSHARK_HOME="${HOME}/.kelpyshark"
 KELPYSHARK_BIN="${KELPYSHARK_HOME}/bin"
-KELPYSHARK_REPO="https://github.com/kelpyshark/kelpyshark.git"
+KELPYSHARK_REPO="https://github.com/kelpyshark/main.git"
 
 echo "KelpyShark Installer"
 echo "========================"

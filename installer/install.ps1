@@ -1,7 +1,7 @@
 # KelpyShark Installer — Windows (PowerShell)
 #
 # Usage:
-#   irm https://kelpyshark.pages.dev/install.ps1 | iex
+#   irm https://github.com/kelpyshark/main.git | iex
 #
 # What this does:
 #   1. Checks for Rust/Cargo (installs if missing)
@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 
 $KELPYSHARK_HOME = Join-Path $env:USERPROFILE ".kelpyshark"
 $KELPYSHARK_BIN = Join-Path $KELPYSHARK_HOME "bin"
-$KELPYSHARK_REPO = "https://github.com/kelpyshark/kelpyshark.git"
+$KELPYSHARK_REPO = "https://github.com/kelpyshark/main.git"
 
 Write-Host ""
 Write-Host "  KelpyShark Installer" -ForegroundColor Cyan

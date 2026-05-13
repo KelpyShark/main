@@ -391,7 +391,7 @@ checksum = "92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2"
 
 [[package]]
 name = "kelpyshark-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "kelpyshark-compiler",
@@ -402,29 +402,29 @@ dependencies = [
 
 [[package]]
 name = "kelpyshark-compiler"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "kelpyshark-installer"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "kelpyshark-interpreter"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "kelpyshark-compiler",
 ]
 
 [[package]]
 name = "kelpyshark-package-manager"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "tempfile",
 ]
 
 [[package]]
 name = "kelpyshark-stdlib"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "kelpyshark-compiler",
  "kelpyshark-interpreter",
@@ -433,7 +433,7 @@ dependencies = [
 
 [[package]]
 name = "leb128fmt"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 

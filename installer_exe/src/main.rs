@@ -33,7 +33,7 @@ const KELPY_BINARY: &[u8] = include_bytes!(env!("KELPY_CLI_BINARY"));
 // Constants
 
 
-const VERSION: &str = "0.1.0";
+const VERSION: &str = "0.2.0";
 
 #[cfg(target_os = "windows")]
 const BINARY_NAME: &str = "kelpyshark.exe";
@@ -169,7 +169,7 @@ fn run_installer() -> Result<(), String> {
     if !toml_path.exists() {
         fs::write(
             &toml_path,
-            "[package]\nname = \"kelpyshark\"\nversion = \"0.1.0\"\ndescription = \"KelpyShark installation\"\n",
+            "[package]\nname = \"kelpyshark\"\nversion = \"0.2.0\"\ndescription = \"KelpyShark installation\"\n",
         )
         .map_err(|e| format!("Failed to write kelpy.toml: {e}"))?;
     }

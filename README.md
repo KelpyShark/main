@@ -1,173 +1,162 @@
-# KelpyShark Programming Language
+# Learn KelpyShark
 
-**A readable, versatile, beginner-friendly programming language capable of compiling to multiple targets.**
+KelpyShark is a small, dynamically typed programming language. This guide gets you
+from your first program to the language reference, with short examples you can
+run as you learn.
 
-## Quick Start
+## Start here
 
-```bash
-# Build the project
-cargo build --release
+New to KelpyShark? Follow the [step-by-step tutorial](https://kelpyshark.kelpw.ing/tutorial/introduction).
+It covers installation, variables, data types, conditions, loops, functions,
+collections, classes, errors, and modules. Use the [language reference](https://kelpyshark.kelpw.ing/reference/keywords)
+when you need to look up a specific feature.
 
-# Run a KelpyShark script
-cargo run --bin kelpyshark-cli -- run examples/hello.ks
+## Your first program
 
-# Start the REPL
-cargo run --bin kelpyshark-cli -- repl
+Create a file named `hello.ks` and add this code:
 
-# Create a new project
-cargo run --bin kelpyshark-cli -- new myproject
-
-# Compile to C
-cargo run --bin kelpyshark-cli -- build examples/hello.ks --target c
-
-# Compile to JavaScript
-cargo run --bin kelpyshark-cli -- build examples/hello.ks --target js
+```ks
+name = "World"
+print("Hello, {$name}!")
 ```
 
-## Example
+Run the file with the KelpyShark command-line tool:
 
+```console
+kelpyshark run hello.ks
 ```
-# KelpyShark program
-bob = {"age": 27, "name": "Bob Smith"}
 
-example_list = ["apple", "banana", "orange"]
+The program prints:
 
+```text
+Hello, World!
+```
+
+KelpyShark runs statements from top to bottom. A `.ks` file does not need a
+`main` function.
+
+## Install KelpyShark
+
+Use the installer for your operating system:
+
+**Windows PowerShell**
+
+```powershell
+irm https://github.com/KelpyShark/main/raw/main/installer/install.ps1 | iex
+```
+
+**macOS or Linux**
+
+```sh
+curl -fsSL https://github.com/KelpyShark/main/raw/main/installer/install.sh | bash
+```
+
+Open a new terminal and check that the command is available:
+
+```console
+kelpyshark --version
+```
+
+See the [installation lesson](https://kelpyshark.kelpw.ing/tutorial/setup) for the full walkthrough.
+
+## Learn by example
+
+KelpyShark uses assignment to create or update variables. Use `def` to define
+functions, braces to mark blocks, and `print` to show a value:
+
+```ks
 def greet(name) {
-    print "Hello, {$name}! "
+    print("Hello, {$name}!")
 }
 
-greet(bob["name"])
-
-for fruit in example_list {
-    print "I like " + fruit
+for name in ["Ada", "Lin"] {
+    greet(name)
 }
-
-def factorial(n) {
-    if n <= 1 {
-        return 1
-    }
-    return n * factorial(n - 1)
-}
-
-print "10! = " + factorial(10)
 ```
 
-## Language Features
+Output:
 
-| Feature | Syntax |
+```text
+Hello, Ada!
+Hello, Lin!
+```
+
+Each tutorial lesson introduces one idea, shows a runnable example, and ends
+with practice prompts. Save an example in a `.ks` file and run it with
+`kelpyshark run filename.ks`.
+
+## Language basics
+
+| Topic | Example |
 |---|---|
-| Variables | `x = 42` |
-| Strings | `name = "KelpyShark"` |
-| Booleans | `true`, `false` |
-| Lists | `items = [1, 2, 3]` |
-| Dicts | `data = {"key": "value"}` |
+| Variables | `score = 42` |
+| Values | `name = "Ada"`, `ready = true`, `missing = null` |
+| Lists | `colors = ["blue", "green"]` |
+| Dictionaries | `person = {"name": "Ada"}` |
 | Functions | `def add(a, b) { return a + b }` |
-| If/Else | `if x > 5 { ... } else { ... }` |
-| While | `while x < 10 { ... }` |
-| For | `for item in list { ... }` |
-| Print | `print "Hello!"` |
-| Comments | `# single line`, `### multi line ###` |
-| String Interpolation | `"Hello {$name}!"` |
+| Conditions | `if score >= 10 { print("Pass") }` |
+| Loops | `for color in colors { print(color) }` |
+| String interpolation | `print("Hello, {$name}!")` |
 | Imports | `import math` |
 
-## Project Structure
+Blocks can use braces or a colon and `end`. Indentation helps people read the
+code, but it does not define a block.
 
-```
-kelpyshark/
-  compiler/          # Lexer, Parser, AST, Semantic Analysis, Code Generators
-    src/
-      lexer.rs       # Tokenizer
-      ast.rs         # AST node definitions
-      parser.rs      # Pratt parser
-      semantic.rs    # Semantic analyzer
-      codegen/
-        c.rs         # C transpiler
-        javascript.rs # JavaScript transpiler
-      error.rs       # Error types
-  interpreter/       # Tree-walking interpreter
-    src/
-      interpreter.rs # AST evaluator + REPL
-      environment.rs # Variable scoping
-      value.rs       # Runtime value types
-    tests/
-      integration_tests.rs  # 35 end-to-end tests
-  cli/               # The `kelpy` command
-  stdlib/            # Standard library (math, strings, io, json, sys)
-  package_manager/   # Package manager (manifest, registry, resolver, installer)
-  installer/         # Cross-platform installer (bash + PowerShell)
-  docs/              # Documentation
-  examples/          # Example programs
+## Run or build a program
+
+Use `run` to execute a file with the KelpyShark interpreter:
+
+```console
+kelpyshark run hello.ks
 ```
 
-## Compilation Pipeline
+Use `build` to generate source code for another language:
 
-```
-Source Code (.ks)
-       ↓
-    Lexer          → Token stream
-       ↓
-    Parser         → AST (Abstract Syntax Tree)
-       ↓
-  Semantic         → Validated AST
-  Analyzer
-       ↓
-  Code Generator   → C / JavaScript / Java / C#
-       ↓
-  Native Compiler  → Binary (via GCC/Clang)
+```console
+kelpyshark build hello.ks --target js
 ```
 
-## Compilation Targets
+`build` writes generated source; it does not run a JavaScript, Java, C#, or C
+compiler for you. Generated targets support different subsets of KelpyShark.
+The interpreter is the most complete way to run a KelpyShark program.
 
-| Target | Status | Output |
+| Target | Generated file | Notes |
 |---|---|---|
-| **Interpreter** | ✅ Working | Direct execution |
-| **C** | ✅ Working | `.c` file → GCC/Clang → binary |
-| **JavaScript** | ✅ Working | `.js` file → Node.js / browser |
-| **Java** | 🔜 Planned | `.java` file |
-| **C#** | 🔜 Planned | `.cs` file |
-| **WebAssembly** | 🔜 Optional | `.wasm` file |
+| Interpreter | Runs the `.ks` file | Full language runtime and registered standard-library modules |
+| C | `.c` | Limited support; use the generated source with a C toolchain |
+| JavaScript | `.js` | Supported subset; use Node.js or a browser runtime |
+| Java | `.java` | Experimental subset; requires a JDK |
+| C# | `.cs` | Experimental subset; requires the .NET SDK |
 
-## Running Tests
+Local source files and packages installed under `libs/` cannot yet be imported
+from a KelpyShark program. Imports currently load registered standard-library
+modules such as `math`, `strings`, `io`, `json`, `sys`, and `http`.
 
-```bash
-cargo test --workspace
-```
+## Command-line shortcuts
 
-## Built-in Functions
-
-| Function | Description |
+| Command | What it does |
 |---|---|
-| `len(x)` | Length of string, list, or dict |
-| `type(x)` | Type name as string |
-| `str(x)` | Convert to string |
-| `num(x)` | Convert to number |
-| `push(list, value)` | Add item to list |
+| `kelpyshark run file.ks` | Run a program |
+| `kelpyshark repl` | Start the interactive interpreter |
+| `kelpyshark build file.ks --target js` | Generate JavaScript source |
+| `kelpyshark new my-project` | Create a project with `kelpy.toml`, `src/main.ks`, and `libs/` |
+| `kelpyshark install` | Install dependencies listed in the current project's manifest |
+| `kelpyshark --help` | Show available commands and options |
 
-## File Extension
-
-KelpyShark source files use the `.ks` extension.
+The CLI also accepts `ks` and `kshark` as executable names. Package publishing
+uses a local registry on the current machine; it does not upload to a public
+service.
 
 ## Documentation
 
-| Document | Description |
-|---|---|
-| [Language Syntax](docs/language-syntax.md) | Complete syntax reference |
-| [Compiler Architecture](docs/compiler-architecture.md) | Pipeline design and internals |
-| [AST Specification](docs/ast-specification.md) | All AST node types, fields, and diagrams |
-| [Package Manager](docs/package-manager.md) | kelpy.toml, install, publish, dependency resolution |
-| [Module System](docs/module-system.md) | Imports, standard library, user-defined modules |
-
-## Test Coverage
-
-195 automated tests across the workspace:
-
-| Crate | Tests | Coverage |
-|---|---|---|
-| Compiler | 75 | Lexer, parser, semantic, C codegen, JS codegen |
-| Interpreter | 31 | Tree-walking evaluation, REPL, builtins |
-| Integration | 35 | End-to-end pipeline (source → output) |
-| Stdlib | 38 | math, strings, io, json, sys |
-| Package Manager | 16 | manifest, registry, resolver, installer |
+- [Tutorial: start learning KelpyShark](https://kelpyshark.kelpw.ing/tutorial/introduction)
+- [Language reference](https://kelpyshark.kelpw.ing/reference/keywords)
+- [Syntax and grammar](https://kelpyshark.kelpw.ing/reference/grammar)
+- [Built-in functions](https://kelpyshark.kelpw.ing/reference/builtin-functions)
+- [Standard library](https://kelpyshark.kelpw.ing/tutorial/stdlib)
+- [Command-line reference](https://kelpyshark.kelpw.ing/general/cli)
+- [Compiler and generated targets](https://kelpyshark.kelpw.ing/general/codegen)
+- [Package manager](https://kelpyshark.kelpw.ing/general/package-manager)
 
 ## License
 

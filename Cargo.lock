@@ -419,6 +419,7 @@ dependencies = [
 name = "kelpyshark-package-manager"
 version = "0.2.0"
 dependencies = [
+ "semver",
  "tempfile",
 ]
 
@@ -428,6 +429,7 @@ version = "0.2.0"
 dependencies = [
  "kelpyshark-compiler",
  "kelpyshark-interpreter",
+ "serde_json",
  "ureq",
 ]
 

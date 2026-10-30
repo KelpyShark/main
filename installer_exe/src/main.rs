@@ -80,7 +80,7 @@ fn run_installer() -> Result<(), String> {
     print_banner();
     print_system_info();
 
-    // ── Choose install directory ──
+    //  Choose install directory
     let default_dir = default_install_dir();
     println!(
         "  {BOLD}Install directory{RESET} {DIM}(press Enter for default){RESET}"
@@ -108,7 +108,7 @@ fn run_installer() -> Result<(), String> {
     );
     println!();
 
-    // ── Confirm ──
+    //  Confirm
     print!("  Proceed with installation? {DIM}[Y/n]{RESET} ");
     io::stdout().flush().ok();
     let mut confirm = String::new();
@@ -121,7 +121,7 @@ fn run_installer() -> Result<(), String> {
     }
     println!();
 
-    // ── Step 1: Create directory structure ──
+    //  Step 1: Create directory structure
     step("1/7", "Creating directory structure...");
     let bin_dir = install_dir.join("bin");
     let lib_dir = install_dir.join("lib");
@@ -133,7 +133,7 @@ fn run_installer() -> Result<(), String> {
     }
     done();
 
-    // ── Step 2: Extract kelpy binary ──
+    //  Step 2: Extract kelpy binary
     step("2/7", "Extracting kelpy binary...");
     let binary_path = bin_dir.join(BINARY_NAME);
     fs::write(&binary_path, KELPY_BINARY)
@@ -158,12 +158,12 @@ fn run_installer() -> Result<(), String> {
     );
     done();
 
-    // ── Step 3: Write example files ──
+    //  Step 3: Write example files
     step("3/7", "Creating example programs...");
     write_example_files(&examples_dir)?;
     done();
 
-    // ── Step 4: Create starter kelpy.toml ──
+    //  Step 4: Create starter kelpy.toml
     step("4/7", "Creating default configuration...");
     let toml_path = install_dir.join("kelpy.toml");
     if !toml_path.exists() {
@@ -175,12 +175,12 @@ fn run_installer() -> Result<(), String> {
     }
     done();
 
-    // ── Step 5: Create uninstaller ──
+    //  Step 5: Create uninstaller
     step("5/7", "Creating uninstaller...");
     write_uninstaller(&install_dir)?;
     done();
 
-    // ── Step 6: Update PATH ──
+    //  Step 6: Update PATH
     step("6/7", "Updating system PATH...");
     let path_updated = add_to_path(&bin_dir);
     if path_updated {
@@ -190,12 +190,12 @@ fn run_installer() -> Result<(), String> {
     }
     done();
 
-    // ── Step 7: Verify ──
+    //  Step 7: Verify
     step("7/7", "Verifying installation...");
     verify_installation(&binary_path)?;
     done();
 
-    // ── Summary ──
+    //  Summary
     println!();
     println!("  {GREEN}═══════════════════════════════════════════{RESET}");
     println!("  {GREEN}{BOLD}  KelpyShark {VERSION} installed!{RESET}");

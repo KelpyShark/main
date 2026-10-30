@@ -1,13 +1,32 @@
-private/
-cli/
-compiler/
-examples/
-interpreter/
-package_manager/
-site/
-stdlib/
-tests/
-target/
-tutorial/
-docs/
-formatter/
+# Checkouts maintained as independent Git repositories
+/cli/
+/code-extension/
+/compiler/
+/docs/
+/formatter/
+/interpreter/
+/package_manager/
+/stdlib/
+
+# Local-only publishing and build tools
+/private/
+/site/
+/scripts/
+
+# Rust workspace build output
+/target/
+
+# Local notes, editor state, and installed root-level dependencies
+.notes/
+/.vscode/
+/node_modules/
+
+# Operating system and editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Tutorial drafting
+/tutorial/
